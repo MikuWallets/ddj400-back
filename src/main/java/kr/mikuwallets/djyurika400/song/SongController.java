@@ -1,7 +1,7 @@
 package kr.mikuwallets.djyurika400.song;
 
 import kr.mikuwallets.djyurika400.exception.InvalidArgumentException;
-import kr.mikuwallets.djyurika400.shared.SharedModule;
+import kr.mikuwallets.djyurika400.shared.AdminAuthComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,10 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping({"api/v1/song"})
 public class SongController {
+    private final AdminAuthComponent authComponent;
     private final SongService songService;
 
     @Autowired
-    public SongController(SongService songService) {
+    public SongController(AdminAuthComponent authComponent, SongService songService) {
+        this.authComponent = authComponent;
         this.songService = songService;
     }
 
@@ -29,7 +31,7 @@ public class SongController {
             @RequestParam(required = false) Integer fetchCount,
             @RequestParam(value = "sort", required = false) List<String> sortParams
             ) {
-        SharedModule.validateAccessToken(request);
+        authComponent.validateAccessToken(request);
 
         if (page < 1) {
             throw new InvalidArgumentException("Page number cannot be lower than 1");

@@ -1,8 +1,8 @@
 package kr.mikuwallets.djyurika400.restarter;
 
 import kr.mikuwallets.djyurika400.exception.ShellCommandException;
-import kr.mikuwallets.djyurika400.shared.SharedModule;
-import org.apache.logging.log4j.util.StringBuilders;
+import kr.mikuwallets.djyurika400.shared.AdminAuthComponent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 @RestController
 @RequestMapping({"/api/v1/restart"})
 public class RestartController {
+
+    private final AdminAuthComponent authComponent;
+
+    public RestartController(AdminAuthComponent authComponent) {
+        this.authComponent = authComponent;
+    }
+
 
     // it runs on ubuntu
 //    boolean isWindows = System.getProperty("os.name")
@@ -26,7 +31,7 @@ public class RestartController {
     @RequestMapping(value = {""}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> restart(HttpServletRequest request) {
-        SharedModule.validateAccessToken(request);
+        authComponent.validateAccessToken(request);
 
         String out = runShellCommand();
 
