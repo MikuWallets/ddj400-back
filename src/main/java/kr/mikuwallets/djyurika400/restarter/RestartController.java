@@ -2,6 +2,7 @@ package kr.mikuwallets.djyurika400.restarter;
 
 import kr.mikuwallets.djyurika400.exception.ShellCommandException;
 import kr.mikuwallets.djyurika400.shared.AdminAuthComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 
+@Slf4j
 @RestController
 @RequestMapping({"/api/v1/restart"})
 public class RestartController {
@@ -61,6 +63,8 @@ public class RestartController {
 
             int exitCode = process.waitFor();
             assert exitCode == 0;
+
+            log.info("DJ Yurika instance restarted");
 
             return result;
         }

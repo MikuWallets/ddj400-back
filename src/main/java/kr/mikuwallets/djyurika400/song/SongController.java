@@ -2,6 +2,7 @@ package kr.mikuwallets.djyurika400.song;
 
 import kr.mikuwallets.djyurika400.exception.InvalidArgumentException;
 import kr.mikuwallets.djyurika400.shared.AdminAuthComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping({"api/v1/song"})
 public class SongController {
