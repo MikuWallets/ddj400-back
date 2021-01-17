@@ -58,4 +58,12 @@ public class SongController {
 
         return new ResponseEntity<>(pagedSongList, HttpStatus.OK);
     }
+
+    @RequestMapping(value = {"{id}"}, method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSong(HttpServletRequest request, @PathVariable String id) {
+        authComponent.validateAccessToken(request);
+        songService.deleteSong(id);
+    }
+
 }

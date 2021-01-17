@@ -1,5 +1,6 @@
 package kr.mikuwallets.djyurika400.song;
 
+import kr.mikuwallets.djyurika400.exception.EntityNotFoundException;
 import kr.mikuwallets.djyurika400.exception.InvalidArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,11 @@ public class SongService {
     }
     public Page<Song> getPagedSongs(int pageIdx, int fetchCount) {
         return songRepository.findAll(PageRequest.of(pageIdx, fetchCount));
+    }
+
+    public void deleteSong(String id) {
+        Song song = songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
+        songRepository.delete(song);
     }
 
     private Sort parseSortParam(List<String> sortParams) {
