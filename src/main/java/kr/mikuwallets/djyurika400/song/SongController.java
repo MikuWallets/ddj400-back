@@ -66,4 +66,12 @@ public class SongController {
         songService.deleteSong(id);
     }
 
+    @RequestMapping(value = {""}, method = RequestMethod.PATCH, produces = {"application/json; charset=utf-8"})
+    @ResponseBody
+    public ResponseEntity<List<Song>> updateSongReview(HttpServletRequest request, @RequestBody List<String> idList) {
+        authComponent.validateAccessToken(request);
+        List<Song> result = songService.updateSongReviewCheck(idList);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }

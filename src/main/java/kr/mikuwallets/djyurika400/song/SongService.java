@@ -32,6 +32,20 @@ public class SongService {
         songRepository.delete(song);
     }
 
+    public List<Song> updateSongReviewCheck(List<String> ids) {
+        List<Song> updatedSongs = new ArrayList<>();
+        for (String id : ids) {
+            Song song = songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
+            if (!song.isReviewed()) {
+                song.setReviewed(true);
+                songRepository.save(song);
+                updatedSongs.add(song);
+            }
+        }
+
+        return updatedSongs;
+    }
+
     private Sort parseSortParam(List<String> sortParams) {
         if (sortParams == null || sortParams.isEmpty()) return Sort.unsorted();
         List<Sort.Order> orderList = new ArrayList<>();
