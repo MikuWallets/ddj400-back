@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'kr.mikuwallets'
-version = '0.0.1-SNAPSHOT'
+version = '0.1.0-RELEASE'
 sourceCompatibility = '11'
 
 configurations {
@@ -25,6 +25,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compile 'org.mariadb.jdbc:mariadb-java-client'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 //    compile 'org.springframework.boot:spring-boot-starter-security'
 }
 
