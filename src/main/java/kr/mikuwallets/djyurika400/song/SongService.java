@@ -1,7 +1,10 @@
 package kr.mikuwallets.djyurika400.song;
 
+import kr.mikuwallets.djyurika400.exception.DBQueryException;
 import kr.mikuwallets.djyurika400.exception.EntityNotFoundException;
 import kr.mikuwallets.djyurika400.exception.InvalidArgumentException;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class SongService {
     private final SongRepository songRepository;
@@ -27,6 +31,15 @@ public class SongService {
         return songRepository.findAll(PageRequest.of(pageIdx, fetchCount));
     }
 
+    public Song getSongById(String id) {
+        try {
+            return songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Could not found using requested id"));
+        }
+        catch (HibernateException e) {
+            throw new DBQueryException(e.getMessage());
+        }
+    }
+
     public void deleteSong(String id) {
         Song song = songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
         songRepository.delete(song);
@@ -34,14 +47,17 @@ public class SongService {
 
     public List<Song> updateSongReviewCheck(List<String> ids) {
         List<Song> updatedSongs = new ArrayList<>();
+        List<String> updatedSongsId = new ArrayList<>();
         for (String id : ids) {
             Song song = songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
             if (!song.isReviewed()) {
                 song.setReviewed(true);
                 songRepository.save(song);
                 updatedSongs.add(song);
+                updatedSongsId.add(song.getId());
             }
         }
+        log.info(String.format("%d songs committed: %s", updatedSongs.size(), updatedSongsId));
 
         return updatedSongs;
     }

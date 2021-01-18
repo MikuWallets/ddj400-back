@@ -59,6 +59,14 @@ public class SongController {
         return new ResponseEntity<>(pagedSongList, HttpStatus.OK);
     }
 
+    @RequestMapping(value = {"{id}"}, method = RequestMethod.GET, produces = {"application/json; charset=utf-8"})
+    public ResponseEntity<Song> getSongById(HttpServletRequest request, @PathVariable(value = "id") String id) {
+        authComponent.validateAccessToken(request);
+
+        Song fetchData = songService.getSongById(id);
+        return new ResponseEntity<>(fetchData, HttpStatus.OK);
+    }
+
     @RequestMapping(value = {"{id}"}, method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSong(HttpServletRequest request, @PathVariable String id) {

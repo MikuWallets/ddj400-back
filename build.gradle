@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'kr.mikuwallets'
-version = '0.1.0-RELEASE'
+version = '0.1.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
