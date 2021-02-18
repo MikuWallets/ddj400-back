@@ -46,7 +46,7 @@ public class RestartController {
 //        if (isWindows) {
 //            builder.command("cmd.exe", "/c", "dir");
 //        } else {
-            processBuilder.command("sh", "-c", "service djyurika restart");
+            processBuilder.command("sh", "-c", "service djyurika2 restart");
 //        }
             processBuilder.directory(new File(System.getProperty("user.home")));
             Process process = processBuilder.start();
@@ -64,7 +64,7 @@ public class RestartController {
             int exitCode = process.waitFor();
             assert exitCode == 0;
 
-            log.info("DJ Yurika instance restarted");
+            log.info("DJ Yurika V2 instance restarted");
 
             return result;
         }
