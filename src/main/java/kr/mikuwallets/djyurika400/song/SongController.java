@@ -31,7 +31,8 @@ public class SongController {
             HttpServletRequest request,
             @RequestParam Integer page,
             @RequestParam(required = false) Integer fetchCount,
-            @RequestParam(value = "sort", required = false) List<String> sortParams
+            @RequestParam(value = "sort", required = false) List<String> sortParams,
+            @RequestParam(required = false) String server
             ) {
         authComponent.validateAccessToken(request);
 
@@ -42,10 +43,10 @@ public class SongController {
         // service
         Page<Song> fetchData;
         if (sortParams == null) {
-            fetchData = songService.getPagedSongs(page-1, fetchCount != null ? fetchCount : 100);
+            fetchData = songService.getPagedSongs(page-1, fetchCount != null ? fetchCount : 100, server);
         }
         else {
-            fetchData = songService.getPagedSongs(page-1, fetchCount != null ? fetchCount : 100, sortParams);
+            fetchData = songService.getPagedSongs(page-1, fetchCount != null ? fetchCount : 100, server, sortParams);
         }
 
         PagedObjectList pagedSongList = PagedObjectList.builder()
@@ -59,22 +60,22 @@ public class SongController {
         return new ResponseEntity<>(pagedSongList, HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"{id}"}, method = RequestMethod.GET, produces = {"application/json; charset=utf-8"})
-    public ResponseEntity<Song> getSongById(HttpServletRequest request, @PathVariable(value = "id") String id) {
+    @RequestMapping(value = {"search/{id}"}, method = RequestMethod.GET, produces = {"application/json; charset=utf-8"})
+    public ResponseEntity<List<Song>> getSongById(HttpServletRequest request, @PathVariable(value = "id") String id, @RequestParam(required = false) String server) {
         authComponent.validateAccessToken(request);
 
-        Song fetchData = songService.getSongById(id);
+        List<Song> fetchData = songService.getSongsById(id, server);
         return new ResponseEntity<>(fetchData, HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"{id}"}, method = RequestMethod.DELETE)
+    @RequestMapping(value = {"{regNo}"}, method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSong(HttpServletRequest request, @PathVariable String id) {
+    public void deleteSong(HttpServletRequest request, @PathVariable Long regNo) {
         authComponent.validateAccessToken(request);
-        songService.deleteSong(id);
+        songService.deleteSong(regNo);
     }
 
-    @RequestMapping(value = {""}, method = RequestMethod.PATCH, produces = {"application/json; charset=utf-8"})
+    @RequestMapping(value = {"update"}, method = RequestMethod.PATCH, produces = {"application/json; charset=utf-8"})
     @ResponseBody
     public ResponseEntity<List<Song>> updateSongReview(HttpServletRequest request, @RequestBody List<String> idList) {
         authComponent.validateAccessToken(request);

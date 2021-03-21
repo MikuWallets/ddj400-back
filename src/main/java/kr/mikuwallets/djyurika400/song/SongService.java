@@ -24,24 +24,48 @@ public class SongService {
         this.songRepository = songRepository;
     }
 
-    public Page<Song> getPagedSongs(int pageIdx, int fetchCount, List<String> sortParams) {
-        return songRepository.findAll(PageRequest.of(pageIdx, fetchCount, parseSortParam(sortParams)));
-    }
-    public Page<Song> getPagedSongs(int pageIdx, int fetchCount) {
-        return songRepository.findAll(PageRequest.of(pageIdx, fetchCount));
+    public Page<Song> getPagedSongs(int pageIdx, int fetchCount, String server, List<String> sortParams) {
+        if (server != null) {
+            return songRepository.findAllByGuild(server, PageRequest.of(pageIdx, fetchCount, parseSortParam(sortParams)));
+        }
+        else {
+            return songRepository.findAll(PageRequest.of(pageIdx, fetchCount, parseSortParam(sortParams)));
+        }
     }
 
-    public Song getSongById(String id) {
+    public Page<Song> getPagedSongs(int pageIdx, int fetchCount, String server) {
+        if (server != null) {
+            return songRepository.findAllByGuild(server, PageRequest.of(pageIdx, fetchCount));
+        }
+        else {
+            return songRepository.findAll(PageRequest.of(pageIdx, fetchCount));
+        }
+    }
+
+    public List<Song> getSongsById(String id, String server) {
         try {
-            return songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Could not found using requested id"));
+            List<Song> songs;
+            if (server != null) {
+                songs = songRepository.findSongsByIdAndGuild(id, server);
+            }
+            else {
+                songs = songRepository.findSongsById(id);
+            }
+
+            if (songs == null || songs.size() == 0) {
+                throw new EntityNotFoundException("Could not found using requested id");
+            }
+            else {
+                return songs;
+            }
         }
         catch (HibernateException e) {
             throw new DBQueryException(e.getMessage());
         }
     }
 
-    public void deleteSong(String id) {
-        Song song = songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
+    public void deleteSong(Long regNo) {
+        Song song = songRepository.findById(regNo).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
         songRepository.delete(song);
     }
 
@@ -49,15 +73,23 @@ public class SongService {
         List<Song> updatedSongs = new ArrayList<>();
         List<String> updatedSongsId = new ArrayList<>();
         for (String id : ids) {
-            Song song = songRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Requested song is not registered"));
-            if (!song.isReviewed()) {
-                song.setReviewed(true);
+            List<Song> songs = songRepository.findSongsById(id);
+            if (songs.size() == 0) {
+                throw new EntityNotFoundException("Requested song is not registered");
+            }
+
+            Song song = songs.get(0);
+            if (song.isReviewed()) {
+                for (Song s : songs) {
+                    s.setReviewed(true);
+                }
                 songRepository.save(song);
                 updatedSongs.add(song);
                 updatedSongsId.add(song.getId());
             }
+
         }
-        log.info(String.format("%d songs committed: %s", updatedSongs.size(), updatedSongsId));
+        log.info(String.format("%d queries, %d songs committed: %s", ids.size(), updatedSongs.size(), updatedSongsId));
 
         return updatedSongs;
     }
@@ -102,6 +134,7 @@ public class SongService {
             case "title":
             case "createdAt":
             case "pickCount":
+            case "lastPlayedAt":
                 return true;
         }
 

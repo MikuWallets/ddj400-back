@@ -1,12 +1,10 @@
 package kr.mikuwallets.djyurika400.song;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,6 +18,9 @@ import java.time.LocalDateTime;
 public class Song {
 
     @Id
+    @Column
+    private Long regNo;
+
     @Column(name = "id", length = 50)
     private String id;
 
@@ -40,5 +41,13 @@ public class Song {
 
     @Column(name = "lastplayedat")
     private LocalDateTime lastPlayedAt;
+
+    @Column
+    @Enumerated(EnumType.ORDINAL)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
+    private SongSource source;
+
+    @Column
+    private String guild;
 
 }
