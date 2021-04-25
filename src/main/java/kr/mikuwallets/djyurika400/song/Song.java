@@ -42,6 +42,9 @@ public class Song {
     @Column(name = "lastplayedat")
     private LocalDateTime lastPlayedAt;
 
+    @Column(name = "url")
+    private String url;
+
     @Column
     @Enumerated(EnumType.ORDINAL)
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
